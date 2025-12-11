@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Escolar - Rol Docente</title>
+    <title>Docente - Colegio San Lorenzo</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -47,7 +47,8 @@
             display: flex;
             flex-direction: column;
             padding: 24px 16px;
-            z-index: 1000;
+            z-index: 1050; /* Z-index aumentado para móvil */
+            transition: transform 0.3s ease-in-out;
         }
 
         /* Logo Header */
@@ -81,6 +82,7 @@
             border-radius: 6px;
             margin-bottom: 4px;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .nav-link i {
             margin-right: 12px;
@@ -111,6 +113,7 @@
             margin-left: var(--sidebar-width);
             padding: 40px 60px;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         /* Títulos de Sección */
@@ -199,6 +202,13 @@
         .table tbody tr:last-child td {
             border-bottom: none;
         }
+        
+        /* Wrapper para scroll horizontal en tablas */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
         /* =========================================
            ESTILOS ESPECÍFICOS POR VISTA
@@ -219,6 +229,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0;
         }
         /* Colores pastel para las imágenes de cursos (Simulación wireframe) */
         .bg-pastel-yellow { background-color: #FDE68A; }
@@ -286,36 +297,182 @@
         /* Control de Visibilidad */
         .view-section { display: none; }
         .view-section.active { display: block; }
+
+        /* =========================================
+           ELEMENTOS RESPONSIVOS EXCLUSIVOS (Móvil)
+           ========================================= */
+        
+        /* Botón Hamburguesa */
+        .menu-toggle-btn {
+            display: none; /* Oculto en escritorio */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        /* Overlay oscuro */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* =========================================
+           MEDIA QUERIES - RESPONSIVIDAD
+           ========================================= */
+        @media (max-width: 991.98px) {
+            
+            /* 1. SIDEBAR OFF-CANVAS */
+            .sidebar {
+                transform: translateX(-100%); /* Oculto a la izquierda */
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            }
+            .sidebar.active {
+                transform: translateX(0); /* Visible */
+            }
+
+            /* Mostrar botón hamburguesa y overlay */
+            .menu-toggle-btn { display: block; }
+            .sidebar-overlay.active { display: block; opacity: 1; }
+
+            /* 2. CONTENIDO PRINCIPAL */
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 40px 20px; /* Padding top para dejar espacio al botón */
+            }
+
+            /* 3. AJUSTES DE FLEXBOX Y LAYOUT INTERNO */
+            
+            /* Botones superiores */
+            #inicio .d-flex.gap-3 {
+                flex-wrap: wrap;
+            }
+            #inicio .d-flex.gap-3 button {
+                flex-grow: 1;
+            }
+
+            /* Tarjeta de Alerta (Fix de diseño complejo) */
+            .custom-card.d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start !important;
+                position: relative;
+                padding-bottom: 80px; /* Espacio para el icono */
+            }
+            .custom-card .fw-bold + p {
+                max-width: 100% !important;
+            }
+            /* Sobrescribir el div decorativo absoluto */
+            .custom-card > div[style*="absolute"] {
+                position: absolute !important;
+                width: 100% !important;
+                height: 60px !important;
+                left: 0;
+                bottom: 0;
+                top: auto !important;
+                right: auto !important;
+                clip-path: none !important;
+                border-radius: 0 0 12px 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .custom-card > div[style*="absolute"] i {
+                font-size: 40px !important;
+            }
+
+            /* Tablas */
+            .table {
+                min-width: 600px;
+            }
+
+            /* Cursos Cards */
+            .course-card-row {
+                flex-direction: column-reverse; /* Imagen abajo para mantener flujo texto */
+                align-items: flex-start;
+                gap: 15px;
+                background: #fdfdfd;
+                padding: 15px;
+                border-radius: 12px;
+                border: 1px solid #eee;
+            }
+            .course-card-row > div:first-child {
+                width: 100%;
+            }
+            .course-preview {
+                width: 100%;
+                height: 150px;
+            }
+
+            /* Notas: Filtros stackeados */
+            #notas .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            #notas .d-flex.gap-2 {
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+            #notas select {
+                width: 100% !important;
+                margin-bottom: 5px;
+            }
+            
+            /* Asistencia Botones */
+            .btn-attendance {
+                margin: 0;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <i class="bi bi-list fs-4"></i>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
         <div class="brand-header">
             <div class="logo-circle"></div>
             <span class="brand-text">Colegio San Lorenzo</span>
         </div>
 
         <nav class="nav flex-column">
-            <a class="nav-link active" href="#" onclick="showSection('inicio', this)">
+            <a class="nav-link active" href="#" onclick="showSection('inicio', this); closeMenuOnMobile()">
                 <i class="bi bi-house-door"></i> Inicio
             </a>
-            <a class="nav-link" href="#" onclick="showSection('cursos', this)">
+            <a class="nav-link" href="#" onclick="showSection('cursos', this); closeMenuOnMobile()">
                 <i class="bi bi-book"></i> Mis Cursos
             </a>
-            <a class="nav-link" href="#" onclick="showSection('notas', this)">
+            <a class="nav-link" href="#" onclick="showSection('notas', this); closeMenuOnMobile()">
                 <i class="bi bi-list-task"></i> Registro de Notas
             </a>
-            <a class="nav-link" href="#" onclick="showSection('asistencia', this)">
+            <a class="nav-link" href="#" onclick="showSection('asistencia', this); closeMenuOnMobile()">
                 <i class="bi bi-check2-square"></i> Registro de Asistencia
             </a>
-            <a class="nav-link" href="#" onclick="showSection('horarios', this)">
+            <a class="nav-link" href="#" onclick="showSection('horarios', this); closeMenuOnMobile()">
                 <i class="bi bi-calendar-event"></i> Horarios
             </a>
-            <a class="nav-link" href="#" onclick="showSection('comunicaciones', this)">
+            <a class="nav-link" href="#" onclick="showSection('comunicaciones', this); closeMenuOnMobile()">
                 <i class="bi bi-chat-left-text"></i> Comunicaciones
             </a>
-            <a class="nav-link" href="#" onclick="showSection('perfil', this)">
+            <a class="nav-link" href="#" onclick="showSection('perfil', this); closeMenuOnMobile()">
                 <i class="bi bi-person"></i> Perfil
             </a>
         </nav>
@@ -351,47 +508,49 @@
 
             <h2 class="section-subtitle">Mis Cursos Asignados</h2>
             <div class="card p-3 border-0 shadow-none" style="background: transparent;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Curso</th>
-                            <th>Grado</th>
-                            <th>Sección</th>
-                            <th>Horario</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="fw-bold">Matemáticas</td>
-                            <td class="text-primary">5to</td>
-                            <td class="text-primary">A</td>
-                            <td>Lunes y Miércoles 8:00 AM - 9:30 AM</td>
-                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold">Ciencias Naturales</td>
-                            <td class="text-primary">4to</td>
-                            <td class="text-primary">B</td>
-                            <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
-                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
-                        </tr>
-                         <tr>
-                            <td class="fw-bold">Ciencias Naturales</td>
-                            <td class="text-primary">4to</td>
-                            <td class="text-primary">B</td>
-                            <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
-                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
-                        </tr>
-                         <tr>
-                            <td class="fw-bold">Historia</td>
-                            <td class="text-primary">3ro</td>
-                            <td class="text-primary">C</td>
-                            <td>Viernes 1:00 PM - 2:30 PM</td>
-                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Grado</th>
+                                <th>Sección</th>
+                                <th>Horario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">Matemáticas</td>
+                                <td class="text-primary">5to</td>
+                                <td class="text-primary">A</td>
+                                <td>Lunes y Miércoles 8:00 AM - 9:30 AM</td>
+                                <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Ciencias Naturales</td>
+                                <td class="text-primary">4to</td>
+                                <td class="text-primary">B</td>
+                                <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
+                                <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                            </tr>
+                             <tr>
+                                <td class="fw-bold">Ciencias Naturales</td>
+                                <td class="text-primary">4to</td>
+                                <td class="text-primary">B</td>
+                                <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
+                                <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                            </tr>
+                             <tr>
+                                <td class="fw-bold">Historia</td>
+                                <td class="text-primary">3ro</td>
+                                <td class="text-primary">C</td>
+                                <td>Viernes 1:00 PM - 2:30 PM</td>
+                                <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -473,27 +632,29 @@
             </div>
 
             <div class="card p-0 border border-light shadow-sm rounded-3">
-                <table class="table m-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-4">Alumno</th>
-                            <th>Nota 1</th>
-                            <th>Nota 2</th>
-                            <th>Nota 3</th>
-                            <th>Nota 4</th>
-                            <th>Nota 4</th>
-                            <th>Promedio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="ps-4 fw-bold">Carlos Mendoza</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">14</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">15.5</td></tr>
-                        <tr><td class="ps-4 fw-bold">Sofia Ramirez</td><td class="grade-number">18</td><td class="grade-number">19</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">18</td><td class="grade-number">15.5</td></tr>
-                        <tr><td class="ps-4 fw-bold">Diego Torres</td><td class="grade-number">12</td><td class="grade-number">13</td><td class="grade-number">11</td><td class="grade-number">14</td><td class="grade-number">14</td><td class="grade-number">12.5</td></tr>
-                        <tr><td class="ps-4 fw-bold">Ana Rodriguez</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">16</td></tr>
-                        <tr><td class="ps-4 fw-bold">Luis Castro</td><td class="grade-number">14</td><td class="grade-number">15</td><td class="grade-number">13</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">14.5</td></tr>
-                        <tr><td class="ps-4 fw-bold">Maria Lopez</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">17</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Alumno</th>
+                                <th>Nota 1</th>
+                                <th>Nota 2</th>
+                                <th>Nota 3</th>
+                                <th>Nota 4</th>
+                                <th>Nota 4</th>
+                                <th>Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="ps-4 fw-bold">Carlos Mendoza</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">14</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">15.5</td></tr>
+                            <tr><td class="ps-4 fw-bold">Sofia Ramirez</td><td class="grade-number">18</td><td class="grade-number">19</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">18</td><td class="grade-number">15.5</td></tr>
+                            <tr><td class="ps-4 fw-bold">Diego Torres</td><td class="grade-number">12</td><td class="grade-number">13</td><td class="grade-number">11</td><td class="grade-number">14</td><td class="grade-number">14</td><td class="grade-number">12.5</td></tr>
+                            <tr><td class="ps-4 fw-bold">Ana Rodriguez</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">16</td></tr>
+                            <tr><td class="ps-4 fw-bold">Luis Castro</td><td class="grade-number">14</td><td class="grade-number">15</td><td class="grade-number">13</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">14.5</td></tr>
+                            <tr><td class="ps-4 fw-bold">Maria Lopez</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">17</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -505,36 +666,38 @@
             </div>
 
             <div class="card p-4 border border-light shadow-sm mb-4">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Alumno</th>
-                            <th class="text-end pe-5">Asistencia</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sofia Mendoza</td>
-                            <td><button class="btn-attendance">Presente</button></td>
-                        </tr>
-                        <tr>
-                            <td>Carlos Ruiz</td>
-                            <td><button class="btn-attendance">Presente</button></td>
-                        </tr>
-                        <tr>
-                            <td>Ana Torres</td>
-                            <td><button class="btn-attendance">Presente</button></td>
-                        </tr>
-                        <tr>
-                            <td>Diego López</td>
-                            <td><button class="btn-attendance">Presente</button></td>
-                        </tr>
-                        <tr>
-                            <td>Isabel García</td>
-                            <td><button class="btn-attendance">Presente</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Alumno</th>
+                                <th class="text-end pe-5">Asistencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sofia Mendoza</td>
+                                <td><button class="btn-attendance">Presente</button></td>
+                            </tr>
+                            <tr>
+                                <td>Carlos Ruiz</td>
+                                <td><button class="btn-attendance">Presente</button></td>
+                            </tr>
+                            <tr>
+                                <td>Ana Torres</td>
+                                <td><button class="btn-attendance">Presente</button></td>
+                            </tr>
+                            <tr>
+                                <td>Diego López</td>
+                                <td><button class="btn-attendance">Presente</button></td>
+                            </tr>
+                            <tr>
+                                <td>Isabel García</td>
+                                <td><button class="btn-attendance">Presente</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="text-end">
                 <button class="btn-attendance-save">Guardar Asistencia</button>
@@ -587,7 +750,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 mt-4 mt-md-0">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-4">
                         <i class="bi bi-chevron-left"></i>
                         <span class="fw-bold">Abril 2024</span>
@@ -761,6 +924,20 @@
                 el.classList.remove('active');
             });
             element.classList.add('active');
+        }
+
+        // --- FUNCIONALIDAD NUEVA MENÚ MÓVIL ---
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenuOnMobile() {
+            if (window.innerWidth < 992) {
+                toggleMenu();
+            }
         }
     </script>
 

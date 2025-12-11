@@ -47,7 +47,8 @@
             padding: 24px 16px;
             display: flex;
             flex-direction: column;
-            z-index: 1000;
+            z-index: 1050; /* Aumentado para estar sobre el contenido en móvil */
+            transition: transform 0.3s ease-in-out;
         }
 
         .brand {
@@ -111,6 +112,7 @@
             margin-left: var(--sidebar-width);
             padding: 40px 60px;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         .page-title {
@@ -199,6 +201,7 @@
             background-color: #F3F4F6;
             border-radius: 4px;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0; /* Evita que se aplaste en móvil */
         }
         
         /* Progress Bar (Calificaciones) */
@@ -225,6 +228,7 @@
             height: 90px;
             object-fit: cover;
             border-radius: 8px;
+            flex-shrink: 0;
         }
 
         /* Asistencia */
@@ -243,33 +247,121 @@
             border-radius: 50%;
             margin: 0 auto;
         }
+
+        /* =========================================
+           ELEMENTOS RESPONSIVOS EXCLUSIVOS (Móvil)
+           ========================================= */
+        
+        /* Botón Hamburguesa */
+        .menu-toggle-btn {
+            display: none; /* Oculto en escritorio */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        /* Overlay oscuro */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* MEDIA QUERY PARA MÓVILES Y TABLETS */
+        @media (max-width: 991.98px) {
+            
+            /* Sidebar oculto por defecto */
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            }
+            /* Clase para mostrar sidebar */
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            /* Mostrar botón y overlay funcional */
+            .menu-toggle-btn {
+                display: block;
+            }
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            /* Contenido principal ocupa todo el ancho */
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 40px 20px; /* Padding top aumentado para el botón */
+            }
+
+            /* Ajustes de componentes internos para pantallas pequeñas */
+            
+            /* Tareas: Asegurar que la imagen no aplaste el texto */
+            .task-card {
+                gap: 15px;
+            }
+            .task-img {
+                width: 100px;
+                height: 70px;
+            }
+            
+            /* Tablas con scroll si es necesario */
+            .table-responsive-mobile {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table {
+                min-width: 300px; /* Asegura un mínimo */
+            }
+        }
+
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <i class="bi bi-list fs-4"></i>
+    </button>
+    <aside class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-logo"></div> 
             <div class="brand-text">Colegio San Lorenzo</div>
         </div>
 
         <nav class="nav flex-column">
-            <div class="nav-link active" onclick="nav('inicio', this)">
+            <div class="nav-link active" onclick="nav('inicio', this); closeMenuOnMobile()">
                 <i class="bi bi-house-door"></i> Inicio
             </div>
-            <div class="nav-link" onclick="nav('calificaciones', this)">
+            <div class="nav-link" onclick="nav('calificaciones', this); closeMenuOnMobile()">
                 <i class="bi bi-journal-check"></i> Mis Calificaciones
             </div>
-            <div class="nav-link" onclick="nav('tareas', this)">
+            <div class="nav-link" onclick="nav('tareas', this); closeMenuOnMobile()">
                 <i class="bi bi-backpack"></i> Tareas y Examenes
             </div>
-            <div class="nav-link" onclick="nav('horarios', this)">
+            <div class="nav-link" onclick="nav('horarios', this); closeMenuOnMobile()">
                 <i class="bi bi-calendar-event"></i> Horarios
             </div>
-            <div class="nav-link" onclick="nav('asistencia', this)">
+            <div class="nav-link" onclick="nav('asistencia', this); closeMenuOnMobile()">
                 <i class="bi bi-check2-all"></i> Asistencia
             </div>
-            <div class="nav-link" onclick="nav('perfil', this)">
+            <div class="nav-link" onclick="nav('perfil', this); closeMenuOnMobile()">
                 <i class="bi bi-person"></i> Perfil
             </div>
         </nav>
@@ -370,59 +462,59 @@
 
             <div class="bg-white p-4 rounded-3">
                 <div class="row align-items-center mb-5">
-                    <div class="col-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
-                    <div class="col-4">
+                    <div class="col-2 col-md-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
+                    <div class="col-10 col-md-4">
                         <div class="fw-bold">Matemáticas</div>
                         <div class="small text-muted">Profesor: Sr. Ramirez</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8 col-md-6 mt-2 mt-md-0">
                          <div class="progress"><div class="progress-bar" style="width: 75%"></div></div>
                     </div>
-                    <div class="col-1 text-end fw-bold">75</div>
+                    <div class="col-4 col-md-1 text-end fw-bold mt-2 mt-md-0">75</div>
                 </div>
                 <div class="row align-items-center mb-5">
-                    <div class="col-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
-                    <div class="col-4">
+                    <div class="col-2 col-md-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
+                    <div class="col-10 col-md-4">
                         <div class="fw-bold">Ciencias</div>
                         <div class="small text-muted">Profesora: Sra. Martinez</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8 col-md-6 mt-2 mt-md-0">
                          <div class="progress"><div class="progress-bar" style="width: 90%"></div></div>
                     </div>
-                    <div class="col-1 text-end fw-bold">90</div>
+                    <div class="col-4 col-md-1 text-end fw-bold mt-2 mt-md-0">90</div>
                 </div>
                 <div class="row align-items-center mb-5">
-                    <div class="col-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
-                    <div class="col-4">
+                    <div class="col-2 col-md-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
+                    <div class="col-10 col-md-4">
                         <div class="fw-bold">Historia</div>
                         <div class="small text-muted">Profesor: Sr. Lopez</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8 col-md-6 mt-2 mt-md-0">
                          <div class="progress bg-secondary bg-opacity-25"><div class="progress-bar bg-secondary" style="width: 60%"></div></div>
                     </div>
-                    <div class="col-1 text-end fw-bold">60</div>
+                    <div class="col-4 col-md-1 text-end fw-bold mt-2 mt-md-0">60</div>
                 </div>
                  <div class="row align-items-center mb-5">
-                    <div class="col-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
-                    <div class="col-4">
+                    <div class="col-2 col-md-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
+                    <div class="col-10 col-md-4">
                         <div class="fw-bold">Lenguaje</div>
                         <div class="small text-muted">Profesora: Sra. Rodriguez</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8 col-md-6 mt-2 mt-md-0">
                          <div class="progress"><div class="progress-bar" style="width: 85%"></div></div>
                     </div>
-                    <div class="col-1 text-end fw-bold">85</div>
+                    <div class="col-4 col-md-1 text-end fw-bold mt-2 mt-md-0">85</div>
                 </div>
                 <div class="row align-items-center">
-                    <div class="col-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
-                    <div class="col-4">
+                    <div class="col-2 col-md-1 text-center"><div class="bg-light p-2 rounded d-inline-block"><i class="bi bi-book"></i></div></div>
+                    <div class="col-10 col-md-4">
                         <div class="fw-bold">Educación Física</div>
                         <div class="small text-muted">Profesor: Sr. Perez</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8 col-md-6 mt-2 mt-md-0">
                          <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
                     </div>
-                    <div class="col-1 text-end fw-bold">70</div>
+                    <div class="col-4 col-md-1 text-end fw-bold mt-2 mt-md-0">70</div>
                 </div>
             </div>
         </section>
@@ -522,24 +614,26 @@
                     </div>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-5 mt-5 mt-md-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <i class="bi bi-chevron-left small text-muted"></i>
                         <span class="fw-bold small">Abril 2024</span>
                         <i class="bi bi-chevron-right small text-muted"></i>
                     </div>
-                    <table class="table table-borderless text-center small">
-                        <thead>
-                            <tr class="text-muted fw-bold"><th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
-                            <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
-                            <tr><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td></tr>
-                            <tr><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td></tr>
-                            <tr><td>29</td><td>30</td><td></td><td></td><td></td><td></td><td></td></tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive-mobile">
+                        <table class="table table-borderless text-center small">
+                            <thead>
+                                <tr class="text-muted fw-bold"><th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+                                <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
+                                <tr><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td></tr>
+                                <tr><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td></tr>
+                                <tr><td>29</td><td>30</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             
@@ -708,6 +802,20 @@
             // Actualizar menú activo
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        // --- FUNCIONALIDAD NUEVA MENÚ MÓVIL ---
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenuOnMobile() {
+            if (window.innerWidth < 992) {
+                toggleMenu();
+            }
         }
     </script>
     

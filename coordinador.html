@@ -45,7 +45,8 @@
             padding: 25px 15px;
             display: flex;
             flex-direction: column;
-            z-index: 1000;
+            z-index: 1050; /* Z-index alto para sobreponerse en móvil */
+            transition: transform 0.3s ease-in-out;
         }
 
         .brand {
@@ -114,6 +115,7 @@
             margin-left: var(--sidebar-width);
             padding: 40px 50px;
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
         .page-title {
@@ -204,8 +206,6 @@
             display: inline-block;
             min-width: 80px;
         }
-        /* Nota: En el wireframe, tanto Activo como Inactivo aparecen con pill verde.
-           Se respeta el diseño visual proporcionado. */
         
         /* Gráficos simulados con CSS puro */
         .chart-placeholder {
@@ -235,38 +235,124 @@
         .view-section { display: none; }
         .view-section.active { display: block; }
 
+        /* Wrappers para tablas responsive */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* =========================================
+           ELEMENTOS RESPONSIVOS EXCLUSIVOS (Móvil)
+           ========================================= */
+        
+        /* Botón Hamburguesa */
+        .menu-toggle-btn {
+            display: none; /* Oculto en escritorio */
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        /* Overlay oscuro */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* MEDIA QUERY: Tablet y Móvil */
+        @media (max-width: 991.98px) {
+            /* Sidebar oculto a la izquierda */
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            /* Mostrar elementos de menú móvil */
+            .menu-toggle-btn { display: block; }
+            .sidebar-overlay.active { display: block; opacity: 1; }
+
+            /* Ajuste de Contenido Principal */
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 40px 20px; /* Padding superior para botón menú */
+            }
+
+            /* Fix para input con ancho fijo inline */
+            input[style*="width: 400px"] {
+                width: 100% !important;
+            }
+
+            /* Ajustes generales */
+            .page-title {
+                font-size: 22px;
+            }
+            
+            /* Tablas */
+            .table {
+                min-width: 600px; /* Asegurar ancho mínimo para scroll */
+            }
+            
+            /* Cards de resumen */
+            .summary-card {
+                margin-bottom: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <button class="menu-toggle-btn" onclick="toggleMenu()">
+        <i class="bi bi-list fs-4"></i>
+    </button>
+    <aside class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-logo">L</div> <div class="brand-text">Colegio San Lorenzo</div>
         </div>
 
         <nav class="nav flex-column">
-            <div class="nav-link active" onclick="nav('inicio', this)">
+            <div class="nav-link active" onclick="nav('inicio', this); closeMenuOnMobile()">
                 <i class="bi bi-house-door"></i> Inicio
             </div>
-            <div class="nav-link" onclick="nav('usuarios', this)">
+            <div class="nav-link" onclick="nav('usuarios', this); closeMenuOnMobile()">
                 <i class="bi bi-people"></i> Gestion de Usuarios
             </div>
-            <div class="nav-link" onclick="nav('academica', this)">
+            <div class="nav-link" onclick="nav('academica', this); closeMenuOnMobile()">
                 <i class="bi bi-book"></i> Gestion Academica
             </div>
-            <div class="nav-link" onclick="nav('horarios', this)">
+            <div class="nav-link" onclick="nav('horarios', this); closeMenuOnMobile()">
                 <i class="bi bi-calendar-week"></i> Gestion de Horarios
             </div>
-            <div class="nav-link" onclick="nav('reportes', this)">
+            <div class="nav-link" onclick="nav('reportes', this); closeMenuOnMobile()">
                 <i class="bi bi-file-earmark-bar-graph"></i> Modulo de Reportes
             </div>
-            <div class="nav-link" onclick="nav('comunicados', this)">
+            <div class="nav-link" onclick="nav('comunicados', this); closeMenuOnMobile()">
                 <i class="bi bi-megaphone"></i> Comunicados Masivos
             </div>
-            <div class="nav-link" onclick="nav('configuracion', this)">
+            <div class="nav-link" onclick="nav('configuracion', this); closeMenuOnMobile()">
                 <i class="bi bi-gear"></i> Configuracion del Sistema
             </div>
-            <div class="nav-link" onclick="nav('perfil', this)">
+            <div class="nav-link" onclick="nav('perfil', this); closeMenuOnMobile()">
                 <i class="bi bi-person"></i> Perfil
             </div>
         </nav>
@@ -283,7 +369,7 @@
             <h1 class="page-title">Inicio</h1>
             
             <h6 class="fw-bold mb-3">Accesos Rápidos</h6>
-            <div class="d-flex gap-3 mb-5">
+            <div class="d-flex gap-3 mb-5 flex-wrap">
                 <button class="btn-blue">Generar Reporte</button>
                 <button class="btn-gray">Administrar Tareas</button>
             </div>
@@ -328,12 +414,14 @@
             </div>
 
             <h6 class="fw-bold mb-3">Tendencias</h6>
-            <div class="row">
+            <div class="row gy-4">
                 <div class="col-md-6">
                     <p class="small fw-bold text-muted mb-2">Tendencia de Calificaciones</p>
-                    <svg viewBox="0 0 300 100" class="w-100" style="height: 150px; overflow: visible;">
-                        <path d="M0,80 Q30,20 60,60 T120,60 T180,20 T240,80 T300,40" fill="none" stroke="#4B5563" stroke-width="3" />
-                    </svg>
+                    <div class="table-responsive-wrapper">
+                        <svg viewBox="0 0 300 100" class="w-100" style="height: 150px; overflow: visible; min-width: 300px;">
+                            <path d="M0,80 Q30,20 60,60 T120,60 T180,20 T240,80 T300,40" fill="none" stroke="#4B5563" stroke-width="3" />
+                        </svg>
+                    </div>
                     <div class="d-flex justify-content-between small text-muted mt-2">
                         <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span>
                     </div>
@@ -357,7 +445,7 @@
         </section>
 
         <section id="usuarios" class="view-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <h1 class="page-title mb-0">Usuarios</h1>
                 <button class="btn-blue">Nuevo Usuario</button>
             </div>
@@ -367,48 +455,50 @@
             </div>
 
             <div class="card border-1 shadow-sm rounded-3 p-2">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-3">Nombre</th>
-                            <th>Rol</th>
-                            <th class="text-center">Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-3 fw-bold">Carlos Mendoza</td>
-                            <td class="text-primary fw-medium">Profesor</td>
-                            <td class="text-center"><span class="status-pill">Activo</span></td>
-                            <td class="text-primary fw-bold small">Editar</td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-bold">Ana Torres</td>
-                            <td class="text-primary fw-medium">Administrativo</td>
-                            <td class="text-center"><span class="status-pill">Activo</span></td>
-                            <td class="text-primary fw-bold small">Editar</td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-bold">Luis Ramirez</td>
-                            <td class="text-primary fw-medium">Estudiante</td>
-                            <td class="text-center"><span class="status-pill">Inactivo</span></td>
-                            <td class="text-primary fw-bold small">Editar</td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-bold">Sofia Vargas</td>
-                            <td class="text-primary fw-medium">Profesor</td>
-                            <td class="text-center"><span class="status-pill">Activo</span></td>
-                            <td class="text-primary fw-bold small">Editar</td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-bold">Diego Flores</td>
-                            <td class="text-primary fw-medium">Administrativo</td>
-                            <td class="text-center"><span class="status-pill">Inactivo</span></td>
-                            <td class="text-primary fw-bold small">Editar</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Nombre</th>
+                                <th>Rol</th>
+                                <th class="text-center">Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-3 fw-bold">Carlos Mendoza</td>
+                                <td class="text-primary fw-medium">Profesor</td>
+                                <td class="text-center"><span class="status-pill">Activo</span></td>
+                                <td class="text-primary fw-bold small">Editar</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-bold">Ana Torres</td>
+                                <td class="text-primary fw-medium">Administrativo</td>
+                                <td class="text-center"><span class="status-pill">Activo</span></td>
+                                <td class="text-primary fw-bold small">Editar</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-bold">Luis Ramirez</td>
+                                <td class="text-primary fw-medium">Estudiante</td>
+                                <td class="text-center"><span class="status-pill">Inactivo</span></td>
+                                <td class="text-primary fw-bold small">Editar</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-bold">Sofia Vargas</td>
+                                <td class="text-primary fw-medium">Profesor</td>
+                                <td class="text-center"><span class="status-pill">Activo</span></td>
+                                <td class="text-primary fw-bold small">Editar</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-bold">Diego Flores</td>
+                                <td class="text-primary fw-medium">Administrativo</td>
+                                <td class="text-center"><span class="status-pill">Inactivo</span></td>
+                                <td class="text-primary fw-bold small">Editar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -417,50 +507,56 @@
 
             <h6 class="fw-bold mb-3">Cursos</h6>
             <div class="card border-1 shadow-sm rounded-3 p-0 mb-3">
-                <table class="table mb-0">
-                    <thead>
-                        <tr><th class="ps-3">Nombre</th><th>Descripción</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-3 fw-medium">Matemáticas</td>
-                            <td class="text-muted small">Curso de matemáticas para estudiantes de secundaria.</td>
-                            <td class="text-primary fw-bold small">Editar | Eliminar</td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-medium">Ciencias Naturales</td>
-                            <td class="text-muted small">Curso de ciencias naturales que abarca biología...</td>
-                            <td class="text-primary fw-bold small">Editar | Eliminar</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th class="ps-3">Nombre</th><th>Descripción</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-3 fw-medium">Matemáticas</td>
+                                <td class="text-muted small">Curso de matemáticas para estudiantes de secundaria.</td>
+                                <td class="text-primary fw-bold small">Editar | Eliminar</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-medium">Ciencias Naturales</td>
+                                <td class="text-muted small">Curso de ciencias naturales que abarca biología...</td>
+                                <td class="text-primary fw-bold small">Editar | Eliminar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <button class="btn-blue mb-5">Crear Curso</button>
 
             <h6 class="fw-bold mb-3">Asignaturas</h6>
             <div class="card border-1 shadow-sm rounded-3 p-0 mb-3">
-                <table class="table mb-0">
-                    <thead>
-                        <tr><th class="ps-3">Nombre</th><th>Curso</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="ps-3 fw-medium">Álgebra</td><td class="text-primary small">Matemáticas</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
-                        <tr><td class="ps-3 fw-medium">Historia del Perú</td><td class="text-primary small">Historia</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th class="ps-3">Nombre</th><th>Curso</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="ps-3 fw-medium">Álgebra</td><td class="text-primary small">Matemáticas</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
+                            <tr><td class="ps-3 fw-medium">Historia del Perú</td><td class="text-primary small">Historia</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <button class="btn-blue mb-5">Crear Asignatura</button>
 
             <h6 class="fw-bold mb-3">Grados y Secciones</h6>
             <div class="card border-1 shadow-sm rounded-3 p-0 mb-3">
-                <table class="table mb-0">
-                    <thead>
-                        <tr><th class="ps-3">Grado</th><th>Sección</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="ps-3 fw-medium">1ro de Secundaria</td><td class="text-primary small">A</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th class="ps-3">Grado</th><th>Sección</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="ps-3 fw-medium">1ro de Secundaria</td><td class="text-primary small">A</td><td class="text-primary fw-bold small">Editar | Eliminar</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <button class="btn-blue">Crear Grado y Sección</button>
         </section>
@@ -468,7 +564,7 @@
         <section id="horarios" class="view-section">
             <h1 class="page-title">Horarios</h1>
             
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <h6 class="fw-bold mb-0">Lista de Horarios</h6>
                 <button class="btn-blue">Crear Horario</button>
             </div>
@@ -478,32 +574,34 @@
             </div>
 
             <div class="card border-1 shadow-sm rounded-3 p-0 overflow-auto">
-                <table class="table mb-0 text-center">
-                    <thead>
-                        <tr>
-                            <th class="text-start ps-3">Hora</th>
-                            <th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th>
-                        </tr>
-                    </thead>
-                    <tbody class="small text-muted">
-                        <tr>
-                            <td class="text-start ps-3 fw-bold text-dark">8:00 AM</td>
-                            <td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td><td class="text-primary">Historia - 10A</td>
-                        </tr>
-                        <tr>
-                            <td class="text-start ps-3 fw-bold text-dark">9:00 AM</td>
-                            <td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td><td class="text-primary">Historia - 10A</td>
-                        </tr>
-                        <tr>
-                            <td class="text-start ps-3 fw-bold text-dark">10:00 AM</td>
-                            <td colspan="5">Descanso</td>
-                        </tr>
-                         <tr>
-                            <td class="text-start ps-3 fw-bold text-dark">10:30 AM</td>
-                            <td class="text-primary">Lenguaje - 10B</td><td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0 text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-start ps-3">Hora</th>
+                                <th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small text-muted">
+                            <tr>
+                                <td class="text-start ps-3 fw-bold text-dark">8:00 AM</td>
+                                <td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td><td class="text-primary">Historia - 10A</td>
+                            </tr>
+                            <tr>
+                                <td class="text-start ps-3 fw-bold text-dark">9:00 AM</td>
+                                <td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td><td class="text-primary">Historia - 10A</td>
+                            </tr>
+                            <tr>
+                                <td class="text-start ps-3 fw-bold text-dark">10:00 AM</td>
+                                <td colspan="5">Descanso</td>
+                            </tr>
+                             <tr>
+                                <td class="text-start ps-3 fw-bold text-dark">10:30 AM</td>
+                                <td class="text-primary">Lenguaje - 10B</td><td class="text-primary">Matemáticas - 10A</td><td class="text-primary">Historia - 10B</td><td class="text-primary">Ciencias - 10A</td><td class="text-primary">Matemáticas - 10B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -531,16 +629,18 @@
 
             <h6 class="fw-bold mb-3">Historial de Reportes</h6>
             <div class="card border-1 shadow-sm rounded-3 p-0">
-                <table class="table mb-0">
-                    <thead>
-                        <tr><th class="ps-3">Fecha</th><th>Grado</th><th>Docente</th><th>Periodo</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="ps-3 text-primary">2024-07-26</td><td class="text-primary">5to Secundaria</td><td class="text-primary">Prof. Ana Torres</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
-                        <tr><td class="ps-3 text-primary">2024-07-20</td><td class="text-primary">4to Secundaria</td><td class="text-primary">Prof. Carlos Ruiz</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
-                        <tr><td class="ps-3 text-primary">2024-07-15</td><td class="text-primary">3ro Secundaria</td><td class="text-primary">Prof. Laura Gomez</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr><th class="ps-3">Fecha</th><th>Grado</th><th>Docente</th><th>Periodo</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="ps-3 text-primary">2024-07-26</td><td class="text-primary">5to Secundaria</td><td class="text-primary">Prof. Ana Torres</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
+                            <tr><td class="ps-3 text-primary">2024-07-20</td><td class="text-primary">4to Secundaria</td><td class="text-primary">Prof. Carlos Ruiz</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
+                            <tr><td class="ps-3 text-primary">2024-07-15</td><td class="text-primary">3ro Secundaria</td><td class="text-primary">Prof. Laura Gomez</td><td class="text-primary">Trimestre 2</td><td class="fw-bold text-primary small">Descargar</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -559,7 +659,7 @@
                 </div>
 
                 <label class="fw-bold small mb-2">Segmentación de Audiencia</label>
-                <div class="d-flex gap-4 mb-3">
+                <div class="d-flex gap-4 mb-3 flex-wrap">
                     <div class="form-check"><input class="form-check-input" type="checkbox"><label class="form-check-label small fw-bold">Rol</label></div>
                     <div class="form-check"><input class="form-check-input" type="checkbox"><label class="form-check-label small fw-bold">Grado</label></div>
                     <div class="form-check"><input class="form-check-input" type="checkbox"><label class="form-check-label small fw-bold">Grado</label></div>
@@ -696,6 +796,20 @@
             // Actualizar menú activo
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        // --- FUNCIONES MENÚ MÓVIL ---
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenuOnMobile() {
+            if (window.innerWidth < 992) {
+                toggleMenu();
+            }
         }
     </script>
     
