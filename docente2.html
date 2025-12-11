@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Escolar - Rol Docente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* =========================================
+           VARIABLES Y RESET (Colores de Wireframes)
+           ========================================= */
+        :root {
+            --primary-text: #2c2c2c;
+            --secondary-text: #6c757d;
+            --sidebar-bg: #ffffff;
+            --sidebar-width: 260px;
+            --bg-body: #ffffff;
+            --accent-blue: #2563EB;
+            --accent-green: #4CAF50;
+            --logo-green: #557564;
+            --gray-btn: #E5E7EB;
+            --border-radius-card: 12px;
+            --border-radius-input: 8px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--primary-text);
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           SIDEBAR (Barra Lateral)
+           ========================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            z-index: 1050; /* Aumentado para estar sobre el overlay */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Logo Header */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+        .logo-circle {
+            width: 32px;
+            height: 32px;
+            background-color: var(--logo-green);
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .brand-text {
+            font-weight: 700;
+            font-size: 16px;
+            color: #000;
+        }
+
+        /* Menu Links */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: #4b5563;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            color: #000;
+        }
+        /* Estado Activo */
+        .nav-link.active {
+            background-color: #E5E7EB; 
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Footer del Sidebar */
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        /* =========================================
+           MAIN CONTENT (Contenido Principal)
+           ========================================= */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Títulos de Sección */
+        h1.page-title {
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        h2.section-subtitle {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        /* =========================================
+           COMPONENTES UNIVERSALES
+           ========================================= */
+        
+        /* Botones */
+        .btn-blue {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn-blue:hover { background-color: #1d4ed8; color: white; }
+
+        .btn-gray {
+            background-color: var(--gray-btn);
+            color: #1f2937;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .btn-pill {
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 13px;
+        }
+
+        /* Inputs y Selects */
+        .form-control, .form-select {
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: var(--border-radius-input);
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #4B5563;
+        }
+        
+        /* Cards */
+        .custom-card {
+            background-color: #F9FAFB;
+            border-radius: var(--border-radius-card);
+            border: none;
+            padding: 24px;
+        }
+
+        /* Tablas */
+        .table {
+            --bs-table-bg: transparent;
+        }
+        .table thead th {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #6B7280;
+            padding-bottom: 15px;
+        }
+        .table tbody td {
+            padding: 16px 8px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #F3F4F6;
+            vertical-align: middle;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* =========================================
+           ESTILOS ESPECÍFICOS POR VISTA
+           ========================================= */
+        
+        .course-card-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .course-preview {
+            width: 180px;
+            height: 120px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .bg-pastel-yellow { background-color: #FDE68A; }
+        .bg-pastel-teal { background-color: #1a5c6d; }
+        .bg-pastel-cream { background-color: #F3F4F6; border: 1px solid #ddd; }
+        .bg-pastel-green { background-color: #A7F3D0; }
+        
+        .mock-book {
+            width: 70px; height: 90px; background: rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .grade-number { color: #3B82F6; font-weight: 500; }
+        
+        .btn-attendance {
+            background-color: #45a834;
+            color: white;
+            width: 100%;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            padding: 8px 0;
+            text-transform: uppercase;
+            font-size: 12px;
+            max-width: 250px;
+            display: block;
+            margin-left: auto;
+        }
+        .btn-attendance-save {
+            background-color: #111827;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+        }
+
+        /* Vista: Horario */
+        .calendar-wrapper {
+            padding: 20px;
+        }
+        .calendar-day-header { font-size: 12px; font-weight: 700; color: #374151; text-align: center; }
+        .calendar-day-num { 
+            font-size: 14px; 
+            text-align: center; 
+            padding: 10px; 
+            cursor: pointer;
+        }
+        .calendar-today {
+            background-color: var(--accent-blue);
+            color: white;
+            border-radius: 50%;
+            width: 35px; height: 35px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto;
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+        }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* =========================================
+           NUEVO: ESTILOS RESPONSIVOS (MOBILE)
+           ========================================= */
+        
+        /* Ocultar overlay por defecto */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Navbar móvil (oculta en desktop) */
+        .mobile-navbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #fff;
+            z-index: 1030;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            /* Mostrar Navbar Móvil */
+            .mobile-navbar {
+                display: flex;
+            }
+
+            /* Ocultar sidebar por defecto desplazándola a la izquierda */
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            /* Clase para mostrar sidebar cuando se activa */
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            /* Ajustar contenido principal para ocupar todo el ancho */
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 40px 20px; /* Padding top aumentado */
+            }
+
+            /* Mostrar overlay cuando sidebar está activo */
+            .sidebar-overlay.show {
+                display: block;
+                opacity: 1;
+            }
+
+            /* Ajustes menores de visualización en móvil */
+            .course-card-row {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .course-preview {
+                width: 100%;
+                height: 150px;
+            }
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="mobile-navbar">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-light me-3 border-0" onclick="toggleSidebar()">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <span class="fw-bold">Colegio San Lorenzo</span>
+        </div>
+        <div class="logo-circle me-0"></div>
+    </nav>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand-header">
+            <div class="logo-circle"></div>
+            <span class="brand-text">Colegio San Lorenzo</span>
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#" onclick="showSection('inicio', this)">
+                <i class="bi bi-house-door"></i> Inicio
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('cursos', this)">
+                <i class="bi bi-book"></i> Mis Cursos
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('notas', this)">
+                <i class="bi bi-list-task"></i> Registro de Notas
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('asistencia', this)">
+                <i class="bi bi-check2-square"></i> Registro de Asistencia
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('horarios', this)">
+                <i class="bi bi-calendar-event"></i> Horarios
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('comunicaciones', this)">
+                <i class="bi bi-chat-left-text"></i> Comunicaciones
+            </a>
+            <a class="nav-link" href="#" onclick="showSection('perfil', this)">
+                <i class="bi bi-person"></i> Perfil
+            </a>
+        </nav>
+
+        <div class="sidebar-footer nav flex-column">
+            <a class="nav-link" href="login.html"><i class="bi bi-box-arrow-right"></i> Cerrar Sesion</a>
+            <a class="nav-link" href="#"><i class="bi bi-question-circle"></i> Ayuda y Soporte</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <section id="inicio" class="view-section active">
+            <h1 class="page-title">Inicio</h1>
+            
+            <div class="d-flex gap-3 mb-5 flex-wrap">
+                <button class="btn-blue">Registrar Asistencia</button>
+                <button class="btn-gray">Ingresar Nota</button>
+                <button class="btn-gray">Enviar Comunicado</button>
+            </div>
+
+            <h2 class="section-subtitle">Alertas y Pendientes</h2>
+            <div class="custom-card mb-5 d-flex justify-content-between align-items-center" style="background-color: #F3F4F6; position: relative; overflow: hidden;">
+                <div style="z-index: 2;">
+                    <h5 class="fw-bold">Registros Pendientes</h5>
+                    <p class="text-muted small" style="max-width: 400px;">Tienes 3 registros de asistencia pendientes. Completa ahora para mantener tus registros actualizados.</p>
+                    <button class="btn-gray mt-2">Completar Ahora</button>
+                </div>
+                <div class="d-none d-md-flex" style="background-color: #EADBC8; width: 300px; height: 100%; position: absolute; right: 0; top: 0; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); align-items: center; justify-content: center;">
+                   <i class="bi bi-check2-square text-white" style="font-size: 80px; opacity: 0.5;"></i>
+                </div>
+            </div>
+
+            <h2 class="section-subtitle">Mis Cursos Asignados</h2>
+            <div class="card p-3 border-0 shadow-none table-responsive" style="background: transparent;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Grado</th>
+                            <th>Sección</th>
+                            <th>Horario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Matemáticas</td>
+                            <td class="text-primary">5to</td>
+                            <td class="text-primary">A</td>
+                            <td>Lunes y Miércoles 8:00 AM - 9:30 AM</td>
+                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Ciencias Naturales</td>
+                            <td class="text-primary">4to</td>
+                            <td class="text-primary">B</td>
+                            <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
+                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                        </tr>
+                         <tr>
+                            <td class="fw-bold">Ciencias Naturales</td>
+                            <td class="text-primary">4to</td>
+                            <td class="text-primary">B</td>
+                            <td>Martes y Jueves 10:00 AM - 11:30 AM</td>
+                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                        </tr>
+                         <tr>
+                            <td class="fw-bold">Historia</td>
+                            <td class="text-primary">3ro</td>
+                            <td class="text-primary">C</td>
+                            <td>Viernes 1:00 PM - 2:30 PM</td>
+                            <td><a href="#" class="text-decoration-none fw-bold small">Ver más</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="cursos" class="view-section">
+            <h1 class="page-title">Mis Cursos</h1>
+            
+            <label class="fw-bold mb-3 d-block">Filtrar</label>
+            <div class="row g-3 mb-5">
+                <div class="col-md-4">
+                    <select class="form-select"><option>Seleccionar Sección</option></select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select"><option>Seleccionar Grado</option></select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select"><option>Seleccionar Curso</option></select>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                <div class="course-card-row">
+                    <div>
+                        <h5 class="fw-bold mb-1">Matemáticas Avanzadas</h5>
+                        <p class="text-primary small mb-3">Grado: 11, Sección: A</p>
+                        <button class="btn-gray btn-pill">Ver Curso</button>
+                    </div>
+                    <div class="course-preview bg-pastel-yellow">
+                        <div class="mock-book"></div>
+                    </div>
+                </div>
+                <div class="course-card-row">
+                    <div>
+                        <h5 class="fw-bold mb-1">Física Fundamental</h5>
+                        <p class="text-primary small mb-3">Grado: 10, Sección: B</p>
+                        <button class="btn-gray btn-pill">Ver Curso</button>
+                    </div>
+                    <div class="course-preview bg-pastel-teal">
+                        <div class="mock-book" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);"></div>
+                    </div>
+                </div>
+                 <div class="course-card-row">
+                    <div>
+                        <h5 class="fw-bold mb-1">Química Orgánica</h5>
+                        <p class="text-primary small mb-3">Grado: 12, Sección: A</p>
+                        <button class="btn-gray btn-pill">Ver Curso</button>
+                    </div>
+                    <div class="course-preview bg-pastel-cream">
+                         <div class="mock-book"></div>
+                    </div>
+                </div>
+                 <div class="course-card-row">
+                    <div>
+                        <h5 class="fw-bold mb-1">Biología Celular</h5>
+                        <p class="text-primary small mb-3">Grado: 11, Sección: B</p>
+                        <button class="btn-gray btn-pill">Ver Curso</button>
+                    </div>
+                    <div class="course-preview bg-pastel-green">
+                         <div class="mock-book" style="background: #e0f2f1;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="notas" class="view-section">
+            <h1 class="page-title">Registro de Notas</h1>
+            <p class="fw-bold mb-4" style="font-size: 14px;">Seleccione el curso, grado, seccion y periodo para ingresar las calificaciones</p>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="d-flex gap-2 flex-wrap">
+                    <select class="form-select bg-gray-200 border-0 fw-bold" style="background:#E5E7EB; width: auto;"><option>Curso: Álgebra</option></select>
+                    <select class="form-select bg-gray-200 border-0 fw-bold" style="background:#E5E7EB; width: auto;"><option>Grado: 5to</option></select>
+                    <select class="form-select bg-gray-200 border-0 fw-bold" style="background:#E5E7EB; width: auto;"><option>Seccion: A</option></select>
+                    <select class="form-select bg-gray-200 border-0 fw-bold" style="background:#E5E7EB; width: auto;"><option>Periodo: 1er Bimestre</option></select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn-blue"><i class="bi bi-upload me-2"></i> Carga Masiva</button>
+                    <button class="btn-gray">Guardar Cambios</button>
+                </div>
+            </div>
+
+            <div class="card p-0 border border-light shadow-sm rounded-3 table-responsive">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Alumno</th>
+                            <th>Nota 1</th>
+                            <th>Nota 2</th>
+                            <th>Nota 3</th>
+                            <th>Nota 4</th>
+                            <th>Nota 4</th>
+                            <th>Promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="ps-4 fw-bold">Carlos Mendoza</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">14</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">15.5</td></tr>
+                        <tr><td class="ps-4 fw-bold">Sofia Ramirez</td><td class="grade-number">18</td><td class="grade-number">19</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">18</td><td class="grade-number">15.5</td></tr>
+                        <tr><td class="ps-4 fw-bold">Diego Torres</td><td class="grade-number">12</td><td class="grade-number">13</td><td class="grade-number">11</td><td class="grade-number">14</td><td class="grade-number">14</td><td class="grade-number">12.5</td></tr>
+                        <tr><td class="ps-4 fw-bold">Ana Rodriguez</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">15</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">16</td></tr>
+                        <tr><td class="ps-4 fw-bold">Luis Castro</td><td class="grade-number">14</td><td class="grade-number">15</td><td class="grade-number">13</td><td class="grade-number">16</td><td class="grade-number">16</td><td class="grade-number">14.5</td></tr>
+                        <tr><td class="ps-4 fw-bold">Maria Lopez</td><td class="grade-number">17</td><td class="grade-number">18</td><td class="grade-number">16</td><td class="grade-number">17</td><td class="grade-number">17</td><td class="grade-number">17</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="asistencia" class="view-section">
+            <h1 class="page-title">Registro de Asistencia</h1>
+            <div class="mb-4">
+                <p class="mb-1 fw-bold">Curso: Matemáticas</p>
+                <p class="fw-bold">Fecha: 15 de mayo de 2024</p>
+            </div>
+
+            <div class="card p-4 border border-light shadow-sm mb-4 table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Alumno</th>
+                            <th class="text-end pe-5">Asistencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sofia Mendoza</td>
+                            <td><button class="btn-attendance">Presente</button></td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Ruiz</td>
+                            <td><button class="btn-attendance">Presente</button></td>
+                        </tr>
+                        <tr>
+                            <td>Ana Torres</td>
+                            <td><button class="btn-attendance">Presente</button></td>
+                        </tr>
+                        <tr>
+                            <td>Diego López</td>
+                            <td><button class="btn-attendance">Presente</button></td>
+                        </tr>
+                        <tr>
+                            <td>Isabel García</td>
+                            <td><button class="btn-attendance">Presente</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end">
+                <button class="btn-attendance-save">Guardar Asistencia</button>
+            </div>
+        </section>
+
+        <section id="horarios" class="view-section">
+            <h1 class="page-title">Horario</h1>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-4">Lunes, 15 de Abril</h5>
+                    
+                    <div class="d-flex flex-column gap-4">
+                        <div class="d-flex gap-3">
+                            <div class="bg-light p-2 rounded"><i class="bi bi-book fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Matemáticas</h6>
+                                <small class="text-muted">8:00 AM - 9:00 AM</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="bg-light p-2 rounded"><i class="bi bi-eyedropper fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Ciencias</h6>
+                                <small class="text-muted">9:00 AM - 10:00 AM</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="bg-light p-2 rounded"><i class="bi bi-map fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Historia</h6>
+                                <small class="text-muted">10:00 AM - 11:00 AM</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="bg-light p-2 rounded"><i class="bi bi-cup-hot fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Almuerzo</h6>
+                                <small class="text-muted">11:00 AM - 12:00 PM</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="bg-light p-2 rounded"><i class="bi bi-globe fs-4"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Inglés</h6>
+                                <small class="text-muted">12:00 PM - 1:00 PM</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-5 mt-md-0">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-4">
+                        <i class="bi bi-chevron-left"></i>
+                        <span class="fw-bold">Abril 2024</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+                    <div class="calendar-wrapper">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="calendar-day-header">S</div>
+                            <div class="calendar-day-header">M</div>
+                            <div class="calendar-day-header">T</div>
+                            <div class="calendar-day-header">W</div>
+                            <div class="calendar-day-header">T</div>
+                            <div class="calendar-day-header">F</div>
+                            <div class="calendar-day-header">S</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="calendar-day-num"></div>
+                            <div class="calendar-day-num">1</div>
+                            <div class="calendar-day-num">2</div>
+                            <div class="calendar-day-num">3</div>
+                            <div class="calendar-day-num">4</div>
+                            <div class="calendar-day-num">5</div>
+                            <div class="calendar-day-num">6</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="calendar-day-num">8</div>
+                            <div class="calendar-day-num">9</div>
+                            <div class="calendar-day-num">10</div>
+                            <div class="calendar-day-num">11</div>
+                            <div class="calendar-day-num">12</div>
+                            <div class="calendar-day-num">13</div>
+                            <div class="calendar-day-num">14</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="calendar-day-num">15</div>
+                            <div class="calendar-day-num">16</div>
+                            <div class="calendar-day-num">17</div>
+                            <div class="calendar-day-num">18</div>
+                            <div class="calendar-day-num">19</div>
+                            <div class="calendar-day-num">20</div>
+                            <div class="calendar-day-num">21</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="calendar-day-num">22</div>
+                            <div class="calendar-day-num">23</div>
+                            <div class="calendar-day-num">24</div>
+                            <div class="calendar-day-num"><div class="calendar-today">25</div></div> <div class="calendar-day-num">26</div>
+                            <div class="calendar-day-num">27</div>
+                            <div class="calendar-day-num">28</div>
+                        </div>
+                         <div class="d-flex justify-content-between">
+                            <div class="calendar-day-num">29</div>
+                            <div class="calendar-day-num">30</div>
+                            <div class="calendar-day-num"></div>
+                            <div class="calendar-day-num"></div>
+                            <div class="calendar-day-num"></div>
+                            <div class="calendar-day-num"></div>
+                            <div class="calendar-day-num"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comunicaciones" class="view-section">
+            <h1 class="page-title">Comunicaciones</h1>
+            <h6 class="fw-bold mb-3" style="font-size: 14px;">Crear Comunicado</h6>
+            <hr class="mb-4 opacity-25">
+
+            <div class="bg-white" style="max-width: 600px;">
+                <div class="mb-3">
+                    <select class="form-select"><option>Seleccionar Sección</option></select>
+                </div>
+                <div class="mb-3">
+                    <select class="form-select"><option>Seleccionar Grado</option></select>
+                </div>
+                <div class="mb-3">
+                    <select class="form-select"><option>Seleccionar Curso</option></select>
+                </div>
+                <div class="mb-3">
+                    <select class="form-select"><option>Seleccionar destinatarios</option></select>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Asunto" style="background-color: #F9FAFB;">
+                </div>
+                <div class="mb-4">
+                    <textarea class="form-control" rows="6" style="background-color: #F9FAFB;"></textarea>
+                </div>
+                <div class="text-end">
+                    <button class="btn-blue px-4">Enviar</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="perfil" class="view-section">
+            <h1 class="page-title">Perfil</h1>
+
+            <div style="max-width: 800px;">
+                <h5 class="fw-bold mb-3">Datos Personales</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Nombre Completo</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+                <div class="mb-5">
+                    <label class="form-label fw-bold small">Correo Electrónico</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+
+                <h5 class="fw-bold mb-3">Información Académica</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Rol/Cargo</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+                <div class="mb-5">
+                    <label class="form-label fw-bold small">Áreas/Asignaturas que Imparte</label>
+                    <input type="text" class="form-control" value="">
+                </div>
+
+                <h5 class="fw-bold mb-3">Notificaciones y Preferencias</h5>
+                <div class="card p-4 border-0" style="background-color: #F9FAFB;">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <p class="fw-bold mb-0 text-dark">Notificaciones por Correo Electrónico</p>
+                            <small class="text-muted">Recibir notificaciones por correo electrónico sobre cambios en el horario...</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <p class="fw-bold mb-0 text-dark">Notificaciones en la Aplicación</p>
+                            <small class="text-muted">Recibir notificaciones en la aplicación sobre eventos importantes...</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="fw-bold mb-0 text-dark">Configuración Regional</p>
+                            <small class="text-muted">Seleccionar la región para la configuración de fecha y hora.</small>
+                        </div>
+                        <span class="fw-bold small">Lima, Perú</span>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button class="btn-blue">Guardar Cambios</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function showSection(sectionId, element) {
+            // 1. Ocultar todas las secciones
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // 2. Mostrar la seleccionada
+            document.getElementById(sectionId).classList.add('active');
+
+            // 3. Actualizar estado activo del menú
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // NUEVO: Cerrar sidebar automáticamente en móvil al seleccionar una opción
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        }
+
+        // NUEVO: Función para alternar la barra lateral en móvil
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            } else {
+                sidebar.classList.add('show');
+                overlay.classList.add('show');
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
