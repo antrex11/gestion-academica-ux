@@ -9,14 +9,12 @@
 
     <style>
         /* =========================================
-           VARIABLES Y CONFIGURACIÓN GENERAL
+           VARIABLES
            ========================================= */
         :root {
-            --primary-green: #3E5C4E; /* Verde oscuro extraído del botón/letrero */
+            --primary-green: #3E5C4E;
             --text-dark: #111827;
-            --text-muted: #6B7280;
             --border-color: #E5E7EB;
-            --input-bg: #FFFFFF;
             --link-blue: #2563EB;
         }
 
@@ -24,214 +22,250 @@
             font-family: 'Poppins', sans-serif;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Evita scroll en desktop */
+            background-color: #fff;
+            overflow: hidden; /* Importante para el layout fijo */
         }
 
         /* =========================================
-           LAYOUT PRINCIPAL
+           LAYOUT PRINCIPAL (FLEXBOX)
            ========================================= */
         .login-wrapper {
             height: 100vh;
             width: 100vw;
+            display: flex; /* Usamos Flexbox nativo en lugar de Grid de Bootstrap */
+            flex-direction: row;
         }
 
-        /* Columna Izquierda (Formulario) */
+        /* --- COLUMNA IZQUIERDA (FORMULARIO) --- */
+        /* Esta columna es flexible: ocupa todo el espacio que sobra */
         .login-left {
+            flex: 1; 
             background-color: #ffffff;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 8%; /* Espaciado lateral responsivo */
+            padding: 0 60px; /* Padding cómodo */
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
         }
 
-        /* Columna Derecha (Imagen) */
+        /* --- COLUMNA DERECHA (IMAGEN) --- */
+        /* Esta columna es RÍGIDA: tiene ancho fijo y no se encoge ni estira */
         .login-right {
-            background-image: url('img/login.png'); /* Placeholder visual */
-            /* NOTA: Reemplaza la URL anterior con la ruta local de tu imagen '1.jpg' */
-            background-color: #f0f0f0; /* Color de fondo por si falla la imagen */
+            width: 600px; /* ANCHO FIJO: No cambiará aunque crezca la pantalla */
+            flex-shrink: 0; /* Impide que se encoja */
+            
+            background-image: url('img/login.png'); /* Tu imagen local */
+            
+            background-color: #f0f0f0;
             background-size: cover;
             background-position: center;
+            position: relative;
             height: 100%;
+        }
+
+        /* Overlay opcional para la imagen */
+        .login-right::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.1); 
         }
 
         /* =========================================
            ELEMENTOS DEL FORMULARIO
            ========================================= */
-        
-        /* Títulos */
+        .login-container {
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
         .login-title {
             font-size: 32px;
-            font-weight: 600;
+            font-weight: 700;
             color: #000;
             margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .login-subtitle {
             font-size: 14px;
-            color: #4B5563; /* Gris medio */
+            color: #4B5563;
             margin-bottom: 40px;
             font-weight: 400;
         }
 
-        /* Inputs y Labels */
         .form-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #000;
-            margin-bottom: 8px;
+            color: #111827;
+            margin-bottom: 6px;
         }
 
         .form-control {
             border: 1px solid var(--border-color);
-            border-radius: 8px; /* Bordes redondeados sutiles */
+            border-radius: 10px;
             padding: 12px 16px;
             font-size: 14px;
-            background-color: #fff;
-            color: #333;
+            background-color: #F9FAFB;
+            transition: all 0.2s;
         }
         
-        .form-control::placeholder {
-            color: #D1D5DB; /* Gris muy claro */
-        }
-
         .form-control:focus {
-            box-shadow: none;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(62, 92, 78, 0.1);
             border-color: var(--primary-green);
         }
 
-        /* Link "Olvidé mi contraseña" */
         .forgot-link {
             float: right;
             font-size: 12px;
             color: var(--link-blue);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        /* Checkbox */
-        .form-check-input {
-            border-color: #D1D5DB;
-            border-radius: 4px;
-        }
-        .form-check-input:checked {
-            background-color: var(--text-dark);
-            border-color: var(--text-dark);
-        }
-        .form-check-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #111827;
-            margin-left: 4px;
-        }
-
-        /* Botón Ingresar */
         .btn-login {
             background-color: var(--primary-green);
             border: none;
             color: white;
             width: 100%;
-            padding: 12px 0;
-            font-size: 14px;
+            padding: 14px 0;
+            font-size: 15px;
             font-weight: 600;
-            border-radius: 6px; /* Borde ligeramente menos redondeado que los inputs */
+            border-radius: 10px;
             margin-top: 20px;
-            transition: background-color 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(62, 92, 78, 0.2);
         }
 
         .btn-login:hover {
-            background-color: #2F463B; /* Un tono más oscuro al hover */
-            color: white;
+            background-color: #2F463B;
+            transform: translateY(-1px);
         }
 
-        /* Ajustes Mobile */
-        @media (max-width: 768px) {
-            .login-right {
-                display: none; /* Ocultar imagen en móvil */
+        .form-check-input:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        /* =========================================
+           RESPONSIVE: MÓVIL (Tarjeta Flotante)
+           ========================================= */
+        /* Cuando la pantalla es menor a 992px (Tablet vertical y Móvil) */
+        @media (max-width: 992px) {
+            .login-wrapper {
+                flex-direction: column; /* Cambiamos a vertical */
+                overflow-y: auto; /* Permitir scroll si es necesario */
+                background-color: #f3f4f6;
             }
+
+            /* La imagen pasa arriba y ocupa un alto fijo */
+            .login-right {
+                width: 100%; /* Ancho completo */
+                height: 40vh; /* Alto del header */
+                order: 1; /* Sube arriba */
+            }
+
+            /* El formulario sube sobre la imagen */
             .login-left {
-                padding: 40px;
+                order: 2; /* Baja */
+                flex: initial; /* Quitamos el flex grow */
+                height: auto;
+                min-height: 65vh;
+                width: 100%;
+                padding: 40px 30px;
+                
+                /* Efecto tarjeta */
+                border-top-left-radius: 30px;
+                border-top-right-radius: 30px;
+                margin-top: -30px; /* Overlap negativo */
+                box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
+                justify-content: flex-start;
+            }
+
+            .login-title {
+                margin-top: 10px;
+                font-size: 28px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container-fluid g-0 login-wrapper">
-        <div class="row g-0 h-100">
-            
-            <div class="col-md-6 col-lg-6 login-left">
-                <div style="max-width: 420px; margin: 0 auto; width: 100%;">
-                    
-                    <h1 class="login-title">Bienvenido</h1>
-                    <p class="login-subtitle">Ingrese sus credenciales para acceder al sistema</p>
+    <div class="login-wrapper">
+        
+        <div class="login-left">
+            <div class="login-container">
+                
+                <h1 class="login-title">Bienvenido</h1>
+                <p class="login-subtitle">Ingrese sus credenciales para acceder al sistema</p>
 
-                    <form>
-                        <div class="mb-3">
-                            <label for="usuario" class="form-label">Usuario</label>
-                            <input type="text" class="form-control" id="usuario" placeholder="Ingrese su correo institucional">
+                <form onsubmit="event.preventDefault(); login();">
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuario" placeholder="Ingrese su correo institucional">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label for="password" class="form-label mb-0">Contraseña</label>
+                            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
                         </div>
+                        <input type="password" class="form-control mt-2" id="password" placeholder="Ingrese su contraseña">
+                    </div>
 
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <label for="password" class="form-label mb-0">Contraseña</label>
-                                <a href="#" class="forgot-link">Olvidé mi contraseña</a>
-                            </div>
-                            <input type="password" class="form-control mt-2" id="password" placeholder="Ingrese su contraseña">
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember">
+                            <label class="form-check-label text-muted small" for="remember">
+                                Recordar sesión
+                            </label>
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember">
-                                <label class="form-check-label" for="remember">
-                                    Recordar por 30 días
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-login" onclick="login()">Ingresar</button>
-                    </form>
+                    <button type="submit" class="btn btn-login">Ingresar</button>
+                </form>
+                
+                <div class="text-center mt-4 text-muted small">
+                    Colegio San Lorenzo &copy; 2025
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-6 login-right">
-                </div>
-
         </div>
+
+        <div class="login-right">
+            </div>
+
     </div>
 
 <script>
 function login() {
-    let usuario = document.getElementById("usuario").value.trim();
-    let password = document.getElementById("password").value.trim();
-
+    let usuario = document.getElementById("usuario").value.trim().toLowerCase();
+    
+    // Simulación simple para demostración
     let rol = "";
 
-    if (usuario.includes("docente")) {
-        rol = "docente";
-    } 
-    else if (usuario.includes("alumno")) {
-        rol = "alumno";
-    } 
-    else if (usuario.includes("coordinador")) {
-        rol = "coordinador";
-    } 
+    if (usuario.includes("docente")) { rol = "docente"; } 
+    else if (usuario.includes("alumno")) { rol = "alumno"; } 
+    else if (usuario.includes("coordinador")) { rol = "coordinador"; } 
     else {
-        alert("Usuario no reconocido");
+        alert("Para probar, use usuarios que contengan: 'docente', 'alumno' o 'coordinador'");
         return;
     }
 
-    // Redirección según rol
-    if (rol === "docente") {
-        window.location.href = "docente.html";
-    } else if (rol === "alumno") {
-        window.location.href = "alumno.html";
-    } else if (rol === "coordinador") {
-        window.location.href = "coordinador.html";
-    }
+    const btn = document.querySelector('.btn-login');
+    btn.innerHTML = 'Ingresando...';
+    btn.style.opacity = '0.8';
+
+    setTimeout(() => {
+        if (rol === "docente") window.location.href = "docente.html";
+        else if (rol === "alumno") window.location.href = "alumno.html";
+        else if (rol === "coordinador") window.location.href = "coordinador.html";
+    }, 500);
 }
 </script>
-
 
 </body>
 </html>
